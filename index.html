@@ -1,4 +1,5 @@
- <!DOCTYPE html>
+
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8" />
@@ -17,6 +18,7 @@
       --muted:#6b7280;
       --danger:#ef4444;
       --soft:#f8fafc;
+      --orange:#f59e0b;
     }
 
     *{box-sizing:border-box}
@@ -256,6 +258,11 @@
       color:#374151;
     }
 
+    .btn-orange{
+      background:#fef3c7;
+      color:#92400e;
+    }
+
     .record-box{
       margin-top:14px;
       padding:14px;
@@ -373,6 +380,7 @@
       padding:9px 12px;
       font-size:12px;
       box-shadow:0 8px 20px rgba(0,0,0,.05);
+      z-index:99;
     }
 
     @media(max-width:980px){
@@ -392,21 +400,20 @@
         <p>إرسال من المعلمين إلى أولياء الأمور ✨</p>
       </div>
 
-      <button class="nav-btn active" data-page="home" onclick="showPage('home', this)">الرئيسية</button>
-      <button class="nav-btn" data-page="add" onclick="showPage('add', this)">إضافة رسالة</button>
-      <button class="nav-btn" data-page="messages" onclick="showPage('messages', this)">الرسائل والصوتيات</button>
-      <button class="nav-btn" data-page="settings" onclick="showPage('settings', this)">الإعدادات</button>
+      <button class="nav-btn active" onclick="showPage('home', this)">الرئيسية</button>
+      <button class="nav-btn" onclick="showPage('add', this)">إضافة رسالة</button>
+      <button class="nav-btn" onclick="showPage('messages', this)">الرسائل والصوتيات</button>
+      <button class="nav-btn" onclick="showPage('settings', this)">الإعدادات</button>
 
       <div class="save-indicator">الحفظ المحلي الدائم مفعل</div>
     </aside>
 
     <main class="main">
 
-      <!-- الرئيسية -->
       <section id="page-home" class="page active">
         <div class="hero">
           <h2 id="homeTitle">منصة أولياء الأمور</h2>
-          <p>منصة احترافية لنقل الرسائل والتسجيلات الصوتية من المعلمين إلى أولياء الأمور 📻</p>
+          <p>منصة احترافية لنقل الرسائل والتسجيلات الصوتية بين المعلمين وأولياء الأمور 📻</p>
         </div>
 
         <div class="stats">
@@ -438,7 +445,7 @@
             <ul>
               <li>تسجيل رسائل صوتية من المعلمين ومن أولياء الأمور</li>
               <li>حفظ محلي تلقائي وعدم حذف الرسائل إلا يدويًا</li>
-              <li>حذف سهل للرسالة أو الصوت أو الكل</li>
+              <li>حذف سهل للرسالة أو الصوت فقط</li>
               <li>بحث سريع في الرسائل والأصوات</li>
             </ul>
           </div>
@@ -446,7 +453,6 @@
         </div>
       </section>
 
-      <!-- إضافة رسالة -->
       <section id="page-add" class="page">
         <h2 class="section-title">إضافة رسالة جديدة 🎙️</h2>
 
@@ -458,7 +464,7 @@
 
           <div class="grid2">
             <div>
-              <label>اسم المعلم/ة</label>
+              <label id="senderLabel">اسم المعلم/ة</label>
               <input id="teacherName" placeholder="مثال: منال محمد">
             </div>
             <div>
@@ -517,7 +523,6 @@
         </div>
       </section>
 
-      <!-- الرسائل -->
       <section id="page-messages" class="page">
         <h2 class="section-title">الرسائل والصوتيات ✉️</h2>
 
@@ -528,7 +533,6 @@
         <div id="messagesList" class="messages-list"></div>
       </section>
 
-      <!-- الإعدادات -->
       <section id="page-settings" class="page">
         <h2 class="section-title">الإعدادات ⚙️</h2>
 
@@ -556,7 +560,7 @@
   <div class="footer-status" id="footerStatus">جاهز</div>
 
   <script>
-    const STORAGE_KEY = "parents_platform_complete_v2";
+    const STORAGE_KEY = "parents_platform_complete_v3";
 
     let appData = loadData();
     let senderType = "teacher";
@@ -600,8 +604,20 @@
 
     function setSender(type){
       senderType = type;
+
       el("senderTeacherBtn").classList.toggle("active", type === "teacher");
       el("senderParentBtn").classList.toggle("active", type === "parent");
+
+      const label = el("senderLabel");
+      const input = el("teacherName");
+
+      if(type === "teacher"){
+        label.textContent = "اسم المعلم/ة";
+        input.placeholder = "مثال: منال محمد";
+      }else{
+        label.textContent = "اسم ولي الأمر";
+        input.placeholder = "مثال: والد الطالب / والدة الطالب";
+      }
     }
 
     function toggleMessageType(){
@@ -636,11 +652,7 @@
         currentStream = await navigator.mediaDevices.getUserMedia({ audio: true });
         recordedChunks = [];
 
-        const mimeType = MediaRecorder.isTypeSupported("audio/webm;codecs=opus")
-          ? "audio/webm;codecs=opus"
-          : "audio/webm";
-
-        mediaRecorder = new MediaRecorder(currentStream, { mimeType });
+        mediaRecorder = new MediaRecorder(currentStream);
 
         mediaRecorder.ondataavailable = function(e){
           if(e.data && e.data.size > 0){
@@ -735,7 +747,7 @@
       }
 
       if(!teacherName){
-        alert("اكتبي اسم المرسل");
+        alert(senderType === "teacher" ? "اكتبي اسم المعلم/ة" : "اكتبي اسم ولي الأمر");
         return;
       }
 
@@ -756,7 +768,7 @@
 
       appData.messages.unshift({
         id: Date.now() + Math.random(),
-        senderType,
+        senderType: senderType,
         teacherName,
         studentName,
         className,
@@ -778,15 +790,27 @@
       toggleMessageType();
       clearCurrentRecording(false);
       el("recordStatus").textContent = "لم يتم تسجيل صوت بعد";
+      setSender(senderType);
 
       saveData("تم حفظ الرسالة بنجاح");
-      showPage("messages", document.querySelector('[data-page="messages"]'));
+      showPage("messages", document.querySelectorAll(".nav-btn")[2]);
     }
 
     function deleteMessage(id){
       if(!confirm("هل تريدين حذف هذه الرسالة؟")) return;
       appData.messages = appData.messages.filter(m => m.id !== id);
       saveData("تم حذف الرسالة");
+    }
+
+    function deleteAudio(id){
+      const msg = appData.messages.find(m => m.id === id);
+      if(!msg) return;
+      if(!confirm("هل تريدين حذف الصوت فقط؟")) return;
+
+      msg.audioData = "";
+      msg.messageType = "text";
+      msg.messageText = msg.messageText || "(تم حذف الصوت)";
+      saveData("تم حذف الصوت فقط");
     }
 
     function deleteAllMessages(){
@@ -857,7 +881,8 @@
               <span class="badge ${m.importance === "عاجل" ? "urgent" : "normal"}">
                 ${escapeHtml(m.importance)}
               </span>
-              <button class="btn btn-danger" type="button" onclick="deleteMessage(${m.id})">حذف</button>
+              <button class="btn btn-danger" type="button" onclick="deleteMessage(${m.id})">حذف الرسالة</button>
+              ${m.messageType === "audio" ? `<button class="btn btn-orange" type="button" onclick="deleteAudio(${m.id})">حذف الصوت فقط</button>` : ""}
             </div>
           </div>
 
@@ -875,6 +900,7 @@
       renderMessages();
     }
 
+    setSender("teacher");
     toggleMessageType();
     renderAll();
   </script>
