@@ -1,287 +1,882 @@
----
-title: "منصة أولياء الأمور"
----
+ <!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>منصة أولياء الأمور</title>
+  <style>
+    :root{
+      --bg:#eef2f7;
+      --nav:#081133;
+      --nav2:#0c1a4a;
+      --purple:#7c3aed;
+      --purple2:#9333ea;
+      --card:#ffffff;
+      --line:#e8eaf3;
+      --text:#111827;
+      --muted:#6b7280;
+      --danger:#ef4444;
+      --soft:#f8fafc;
+    }
 
-<div id="app"></div>
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:Tahoma, Arial, sans-serif;
+      background:linear-gradient(135deg,#f8fafc,#eef2f7);
+      color:var(--text);
+    }
 
-<script>
-document.body.innerHTML = `
+    .app{
+      min-height:100vh;
+      display:grid;
+      grid-template-columns:260px 1fr;
+    }
 
-<style>
-body{margin:0;font-family:Tajawal;background:#eef2f7;display:flex}
+    .sidebar{
+      background:linear-gradient(180deg,var(--nav),var(--nav2));
+      color:#fff;
+      padding:24px 16px;
+      min-height:100vh;
+    }
 
-/* القائمة */
-.sidebar{
-width:230px;
-background:#0f172a;
-color:#fff;
-height:100vh;
-padding:20px;
-}
+    .brand{
+      text-align:center;
+      margin-bottom:24px;
+    }
 
-.sidebar h3{margin-bottom:20px}
+    .brand h1{
+      margin:0;
+      font-size:28px;
+      font-weight:1000;
+    }
 
-.sidebar div{
-padding:12px;
-margin:8px 0;
-cursor:pointer;
-border-radius:10px;
-}
+    .brand p{
+      margin:8px 0 0;
+      font-size:12px;
+      color:#c7d2fe;
+    }
 
-.sidebar div:hover{background:#1e293b}
+    .nav-btn{
+      width:100%;
+      border:none;
+      background:transparent;
+      color:#fff;
+      text-align:right;
+      padding:14px 16px;
+      border-radius:14px;
+      margin-bottom:8px;
+      cursor:pointer;
+      font-weight:900;
+    }
 
-/* المحتوى */
-.main{
-flex:1;
-padding:20px;
-}
+    .nav-btn.active,
+    .nav-btn:hover{
+      background:rgba(255,255,255,.08);
+    }
 
-/* كروت */
-.cards{
-display:grid;
-grid-template-columns:repeat(4,1fr);
-gap:10px;
-margin-bottom:15px;
-}
+    .main{
+      padding:24px;
+    }
 
-.card{
-background:#fff;
-padding:15px;
-border-radius:15px;
-text-align:center;
-}
+    .page{display:none}
+    .page.active{display:block}
 
-/* صندوق */
-.box{
-background:#fff;
-padding:15px;
-border-radius:15px;
-margin-top:10px;
-}
+    .hero{
+      text-align:center;
+      margin-bottom:20px;
+    }
 
-/* زر */
-button{
-background:#7c3aed;
-color:#fff;
-border:none;
-padding:8px;
-border-radius:10px;
-margin-top:5px;
-cursor:pointer;
-}
+    .hero h2{
+      margin:0;
+      font-size:42px;
+      font-weight:1000;
+      color:#111b44;
+    }
 
-.del{background:red}
+    .hero p{
+      margin:8px 0 0;
+      color:var(--muted);
+    }
 
-input,textarea,select{
-width:100%;
-padding:8px;
-margin-top:5px;
-border-radius:8px;
-border:1px solid #ddd;
-}
+    .stats{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:14px;
+      margin-bottom:18px;
+    }
 
-audio{width:100%;margin-top:5px}
-</style>
+    .card{
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius:20px;
+      padding:18px;
+      box-shadow:0 10px 28px rgba(15,23,42,.04);
+    }
 
-<div class="sidebar">
-<h3>📱 منصة أولياء الأمور</h3>
-<div onclick="go('home')">الرئيسية</div>
-<div onclick="go('add')">إضافة رسالة</div>
-<div onclick="go('messages')">الرسائل</div>
-<div onclick="go('settings')">الإعدادات</div>
-</div>
+    .stat{
+      text-align:center;
+    }
 
-<div class="main">
+    .stat .icon{
+      width:52px;
+      height:52px;
+      border-radius:16px;
+      margin:0 auto 10px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:24px;
+      background:#f3e8ff;
+      color:var(--purple);
+    }
 
-<!-- الرئيسية -->
-<div id="home" class="page">
-<h2>منصة أولياء الأمور</h2>
+    .stat .label{
+      color:var(--muted);
+      font-size:14px;
+    }
 
-<div class="cards">
-<div class="card">الطالبات<br><b id="sCount">0</b></div>
-<div class="card">الرسائل<br><b id="mCount">0</b></div>
-<div class="card">الصوتيات<br><b id="aCount">0</b></div>
-<div class="card">الحالة<br><b style="color:green">فعال</b></div>
-</div>
+    .stat .value{
+      font-size:34px;
+      font-weight:1000;
+      margin-top:6px;
+    }
 
-<div class="box">
-<input id="className" placeholder="اسم الفصل">
-<button onclick="addClass()">حفظ الفصل</button>
+    .feature-box{
+      display:flex;
+      justify-content:space-between;
+      gap:16px;
+      align-items:flex-start;
+    }
 
-<textarea id="studentsText" placeholder="أسماء الطالبات"></textarea>
-<button onclick="addStudents()">إضافة الطالبات</button>
+    .feature-box h3{
+      margin:0 0 10px;
+      font-size:26px;
+    }
 
-<div id="studentsList"></div>
-</div>
-</div>
+    .feature-box ul{
+      margin:0;
+      padding-right:18px;
+      color:var(--muted);
+      line-height:2;
+    }
 
-<!-- إضافة -->
-<div id="add" class="page" style="display:none">
-<h2>إضافة رسالة</h2>
+    .section-title{
+      text-align:center;
+      font-size:38px;
+      font-weight:1000;
+      margin:0 0 18px;
+      color:#111b44;
+    }
 
-<select id="studentSelect"></select>
+    .grid2{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:14px;
+    }
 
-<select id="sender">
-<option>معلمة</option>
-<option>ولي أمر</option>
-</select>
+    label{
+      display:block;
+      font-size:13px;
+      font-weight:800;
+      margin:0 0 7px;
+      color:#374151;
+    }
 
-<textarea id="msg" placeholder="اكتب الرسالة"></textarea>
-<button onclick="saveMsg()">إرسال</button>
+    input,select,textarea{
+      width:100%;
+      border:1px solid #e5e7eb;
+      background:#fff;
+      border-radius:14px;
+      padding:13px 14px;
+      font-size:14px;
+      outline:none;
+    }
 
-<hr>
+    textarea{
+      min-height:110px;
+      resize:vertical;
+    }
 
-<button onclick="startRec()">🎤 تسجيل</button>
-<button onclick="stopRec()">إيقاف</button>
-<audio id="audioPlayer" controls></audio>
-<button onclick="saveAudio()">حفظ الصوت</button>
-</div>
+    .sender-row{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:12px;
+      margin-bottom:14px;
+    }
 
-<!-- الرسائل -->
-<div id="messages" class="page" style="display:none">
-<h2>الرسائل والصوتيات</h2>
+    .sender-btn{
+      border:2px solid #e5e7eb;
+      background:#fff;
+      color:#374151;
+      border-radius:14px;
+      padding:14px;
+      font-weight:900;
+      cursor:pointer;
+    }
 
-<div id="msgList"></div>
-<div id="audioList"></div>
-</div>
+    .sender-btn.active{
+      border-color:var(--purple);
+      background:#faf5ff;
+      color:var(--purple);
+    }
 
-<!-- الإعدادات -->
-<div id="settings" class="page" style="display:none">
-<h2>الإعدادات</h2>
-<button onclick="clearAll()" class="del">حذف كل البيانات</button>
-</div>
+    .actions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:12px;
+    }
 
-</div>
+    .btn{
+      border:none;
+      border-radius:14px;
+      padding:13px 18px;
+      font-weight:900;
+      cursor:pointer;
+    }
 
-<script>
+    .btn-primary{
+      background:linear-gradient(90deg,var(--purple2),var(--purple));
+      color:#fff;
+    }
 
-let data = JSON.parse(localStorage.getItem("platform")) || {
-students:[],
-messages:[],
-audios:[],
-class:""
-};
+    .btn-soft{
+      background:#fce7f3;
+      color:#be185d;
+    }
 
-function save(){
-localStorage.setItem("platform", JSON.stringify(data));
-render();
-}
+    .btn-danger{
+      background:#fee2e2;
+      color:#b91c1c;
+    }
 
-function go(p){
-document.querySelectorAll(".page").forEach(x=>x.style.display="none");
-document.getElementById(p).style.display="block";
-}
+    .btn-ghost{
+      background:#f3f4f6;
+      color:#374151;
+    }
 
-/* طالبات */
-function addStudents(){
-studentsText.value.split("\\n").forEach(s=>{
-if(s.trim()) data.students.push(s.trim());
-});
-studentsText.value="";
-save();
-}
+    .record-box{
+      margin-top:14px;
+      padding:14px;
+      border:1px dashed #d8dbe8;
+      border-radius:16px;
+      background:#fafbff;
+    }
 
-function deleteStudent(i){
-data.students.splice(i,1);
-save();
-}
+    .record-status{
+      font-size:13px;
+      color:var(--muted);
+      margin-top:8px;
+    }
 
-/* رسالة */
-function saveMsg(){
-data.messages.push({
-student:studentSelect.value,
-text:msg.value,
-sender:sender.value
-});
-msg.value="";
-save();
-}
+    .search-wrap{
+      max-width:280px;
+      margin-bottom:16px;
+    }
 
-function deleteMsg(i){
-data.messages.splice(i,1);
-save();
-}
+    .messages-list{
+      display:flex;
+      flex-direction:column;
+      gap:14px;
+    }
 
-/* صوت */
-let rec,chunks=[];
+    .message-card{
+      background:#fff;
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:16px;
+      box-shadow:0 10px 22px rgba(0,0,0,.03);
+    }
 
-async function startRec(){
-try{
-let stream = await navigator.mediaDevices.getUserMedia({audio:true});
-rec = new MediaRecorder(stream);
-chunks=[];
-rec.ondataavailable=e=>chunks.push(e.data);
-rec.start();
-}catch{
-alert("فعلي المايك 🎤");
-}
-}
+    .message-top{
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-bottom:10px;
+    }
 
-function stopRec(){
-rec.stop();
-rec.onstop=()=>{
-let blob=new Blob(chunks);
-audioPlayer.src=URL.createObjectURL(blob);
-audioPlayer.blob=blob;
-};
-}
+    .meta{
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.9;
+    }
 
-function saveAudio(){
-let reader=new FileReader();
-reader.readAsDataURL(audioPlayer.blob);
-reader.onload=()=>{
-data.audios.push(reader.result);
-save();
-};
-}
+    .badges{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      align-items:center;
+    }
 
-function deleteAudio(i){
-data.audios.splice(i,1);
-save();
-}
+    .badge{
+      padding:5px 10px;
+      border-radius:999px;
+      font-size:12px;
+      font-weight:900;
+    }
 
-/* حذف الكل */
-function clearAll(){
-if(confirm("حذف كل شيء؟")){
-localStorage.clear();
-location.reload();
-}
-}
+    .badge.teacher{background:#ede9fe;color:#6d28d9}
+    .badge.parent{background:#dbeafe;color:#1d4ed8}
+    .badge.text{background:#fef3c7;color:#92400e}
+    .badge.audio{background:#fce7f3;color:#be185d}
+    .badge.normal{background:#ecfeff;color:#0f766e}
+    .badge.urgent{background:#fee2e2;color:#b91c1c}
 
-/* عرض */
-function render(){
+    .message-body{
+      white-space:pre-wrap;
+      line-height:1.9;
+      margin-top:8px;
+    }
 
-studentsList.innerHTML = data.students.map((s,i)=>`
-<div>${s}
-<button class="del" onclick="deleteStudent(${i})">حذف</button>
-</div>
-`).join("");
+    audio{
+      width:100%;
+      margin-top:12px;
+    }
 
-studentSelect.innerHTML = data.students.map(s=>`<option>${s}</option>`);
+    .settings-box{
+      max-width:700px;
+      margin:0 auto;
+    }
 
-msgList.innerHTML = data.messages.map((m,i)=>`
-<div class="box">
-${m.student} - ${m.sender}<br>${m.text}
-<button class="del" onclick="deleteMsg(${i})">حذف</button>
-</div>
-`).join("");
+    .danger-zone{
+      margin-top:18px;
+      padding-top:18px;
+      border-top:1px solid #eee;
+    }
 
-audioList.innerHTML = data.audios.map((a,i)=>`
-<div class="box">
-<audio src="${a}" controls></audio>
-<button class="del" onclick="deleteAudio(${i})">حذف</button>
-</div>
-`).join("");
+    .empty{
+      text-align:center;
+      color:var(--muted);
+      padding:28px 10px;
+    }
 
-sCount.innerText = data.students.length;
-mCount.innerText = data.messages.length;
-aCount.innerText = data.audios.length;
+    .save-indicator{
+      margin-top:18px;
+      background:rgba(34,197,94,.13);
+      border:1px solid rgba(34,197,94,.25);
+      color:#bbf7d0;
+      border-radius:14px;
+      padding:10px 12px;
+      font-size:12px;
+      text-align:center;
+    }
 
-}
+    .footer-status{
+      position:fixed;
+      left:18px;
+      bottom:18px;
+      background:#fff;
+      border:1px solid var(--line);
+      border-radius:12px;
+      padding:9px 12px;
+      font-size:12px;
+      box-shadow:0 8px 20px rgba(0,0,0,.05);
+    }
 
-render();
+    @media(max-width:980px){
+      .app{grid-template-columns:1fr}
+      .sidebar{min-height:auto}
+      .stats{grid-template-columns:repeat(2,1fr)}
+      .grid2{grid-template-columns:1fr}
+      .hero h2,.section-title{font-size:30px}
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <h1 id="brandName">منصة أولياء الأمور</h1>
+        <p>إرسال من المعلمين إلى أولياء الأمور ✨</p>
+      </div>
 
-</script>
+      <button class="nav-btn active" data-page="home" onclick="showPage('home', this)">الرئيسية</button>
+      <button class="nav-btn" data-page="add" onclick="showPage('add', this)">إضافة رسالة</button>
+      <button class="nav-btn" data-page="messages" onclick="showPage('messages', this)">الرسائل والصوتيات</button>
+      <button class="nav-btn" data-page="settings" onclick="showPage('settings', this)">الإعدادات</button>
 
-`;
-</script>
+      <div class="save-indicator">الحفظ المحلي الدائم مفعل</div>
+    </aside>
+
+    <main class="main">
+
+      <!-- الرئيسية -->
+      <section id="page-home" class="page active">
+        <div class="hero">
+          <h2 id="homeTitle">منصة أولياء الأمور</h2>
+          <p>منصة احترافية لنقل الرسائل والتسجيلات الصوتية من المعلمين إلى أولياء الأمور 📻</p>
+        </div>
+
+        <div class="stats">
+          <div class="card stat">
+            <div class="icon">✅</div>
+            <div class="label">حالة النظام</div>
+            <div class="value" style="color:#16a34a">فعال</div>
+          </div>
+          <div class="card stat">
+            <div class="icon">👥</div>
+            <div class="label">أصوات أولياء الأمور</div>
+            <div class="value" id="statParentAudio">0</div>
+          </div>
+          <div class="card stat">
+            <div class="icon">🎤</div>
+            <div class="label">رسائل صوتية</div>
+            <div class="value" id="statAudio">0</div>
+          </div>
+          <div class="card stat">
+            <div class="icon">💬</div>
+            <div class="label">إجمالي الرسائل</div>
+            <div class="value" id="statTotal">0</div>
+          </div>
+        </div>
+
+        <div class="card feature-box">
+          <div>
+            <h3>المميزات ✨</h3>
+            <ul>
+              <li>تسجيل رسائل صوتية من المعلمين ومن أولياء الأمور</li>
+              <li>حفظ محلي تلقائي وعدم حذف الرسائل إلا يدويًا</li>
+              <li>حذف سهل للرسالة أو الصوت أو الكل</li>
+              <li>بحث سريع في الرسائل والأصوات</li>
+            </ul>
+          </div>
+          <div style="font-size:38px">⚡</div>
+        </div>
+      </section>
+
+      <!-- إضافة رسالة -->
+      <section id="page-add" class="page">
+        <h2 class="section-title">إضافة رسالة جديدة 🎙️</h2>
+
+        <div class="card">
+          <div class="sender-row">
+            <button id="senderParentBtn" class="sender-btn" type="button" onclick="setSender('parent')">من ولي الأمر 👥</button>
+            <button id="senderTeacherBtn" class="sender-btn active" type="button" onclick="setSender('teacher')">من المعلم/ة 📱</button>
+          </div>
+
+          <div class="grid2">
+            <div>
+              <label>اسم المعلم/ة</label>
+              <input id="teacherName" placeholder="مثال: منال محمد">
+            </div>
+            <div>
+              <label>اسم الطالب</label>
+              <input id="studentName" placeholder="مثال: نوف محمد أحمد">
+            </div>
+          </div>
+
+          <div class="grid2" style="margin-top:12px">
+            <div>
+              <label>الصف</label>
+              <input id="className" placeholder="اختر الصف">
+            </div>
+            <div>
+              <label>المادة</label>
+              <input id="subjectName" placeholder="مثال: الرياضيات">
+            </div>
+          </div>
+
+          <div class="grid2" style="margin-top:12px">
+            <div>
+              <label>درجة الأهمية</label>
+              <select id="importance">
+                <option value="عادي">عادي</option>
+                <option value="عاجل">عاجل</option>
+              </select>
+            </div>
+            <div>
+              <label>نوع الرسالة</label>
+              <select id="messageType" onchange="toggleMessageType()">
+                <option value="text">نصية 📝</option>
+                <option value="audio">صوتية 🎙️</option>
+              </select>
+            </div>
+          </div>
+
+          <div id="textWrap" style="margin-top:12px">
+            <label>الرسالة</label>
+            <textarea id="messageText" placeholder="اكتب رسالتك هنا..."></textarea>
+          </div>
+
+          <div id="audioWrap" class="record-box" style="display:none">
+            <label>تسجيل صوتي</label>
+            <div class="actions">
+              <button class="btn btn-soft" type="button" onclick="startRecording()">🎙️ بدء التسجيل</button>
+              <button class="btn btn-danger" type="button" onclick="stopRecording()">⏹️ إيقاف التسجيل</button>
+              <button class="btn btn-ghost" type="button" onclick="clearCurrentRecording()">🗑️ حذف التسجيل الحالي</button>
+            </div>
+            <div id="recordStatus" class="record-status">لم يتم تسجيل صوت بعد</div>
+            <audio id="audioPreview" controls style="display:none"></audio>
+          </div>
+
+          <div class="actions">
+            <button class="btn btn-primary" type="button" onclick="saveMessage()">إرسال الرسالة ✈️</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- الرسائل -->
+      <section id="page-messages" class="page">
+        <h2 class="section-title">الرسائل والصوتيات ✉️</h2>
+
+        <div class="search-wrap">
+          <input id="searchInput" placeholder="ابحث عن رسالة..." oninput="renderMessages()">
+        </div>
+
+        <div id="messagesList" class="messages-list"></div>
+      </section>
+
+      <!-- الإعدادات -->
+      <section id="page-settings" class="page">
+        <h2 class="section-title">الإعدادات ⚙️</h2>
+
+        <div class="card settings-box">
+          <label>اسم المنصة</label>
+          <input id="platformName" placeholder="منصة أولياء الأمور">
+
+          <div class="actions">
+            <button class="btn btn-primary" type="button" onclick="savePlatformName()">حفظ التغييرات</button>
+          </div>
+
+          <div class="danger-zone">
+            <div style="font-weight:1000;color:#b91c1c;margin-bottom:6px">منطقة الخطر ⚠️</div>
+            <div style="color:#6b7280;font-size:13px">حذف جميع الرسائل والأصوات نهائيًا</div>
+            <div class="actions">
+              <button class="btn btn-danger" type="button" onclick="deleteAllMessages()">حذف جميع الرسائل</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <div class="footer-status" id="footerStatus">جاهز</div>
+
+  <script>
+    const STORAGE_KEY = "parents_platform_complete_v2";
+
+    let appData = loadData();
+    let senderType = "teacher";
+    let mediaRecorder = null;
+    let recordedChunks = [];
+    let currentAudioBlob = null;
+    let currentStream = null;
+
+    function el(id){ return document.getElementById(id); }
+
+    function defaultData(){
+      return {
+        platformName: "منصة أولياء الأمور",
+        messages: []
+      };
+    }
+
+    function loadData(){
+      try{
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if(!raw) return defaultData();
+        return Object.assign(defaultData(), JSON.parse(raw));
+      }catch(e){
+        return defaultData();
+      }
+    }
+
+    function saveData(statusText = "تم الحفظ"){
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
+      el("footerStatus").textContent = statusText;
+      renderAll();
+    }
+
+    function showPage(page, btn){
+      document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+      document.querySelectorAll(".nav-btn").forEach(b => b.classList.remove("active"));
+      el("page-" + page).classList.add("active");
+      if(btn) btn.classList.add("active");
+      if(page === "messages") renderMessages();
+    }
+
+    function setSender(type){
+      senderType = type;
+      el("senderTeacherBtn").classList.toggle("active", type === "teacher");
+      el("senderParentBtn").classList.toggle("active", type === "parent");
+    }
+
+    function toggleMessageType(){
+      const type = el("messageType").value;
+      el("textWrap").style.display = type === "text" ? "block" : "none";
+      el("audioWrap").style.display = type === "audio" ? "block" : "none";
+    }
+
+    function savePlatformName(){
+      const name = el("platformName").value.trim() || "منصة أولياء الأمور";
+      appData.platformName = name;
+      saveData("تم حفظ اسم المنصة");
+    }
+
+    function updatePlatformNameUI(){
+      const name = appData.platformName || "منصة أولياء الأمور";
+      el("brandName").textContent = name;
+      el("homeTitle").textContent = name;
+      el("platformName").value = name;
+      document.title = name;
+    }
+
+    async function startRecording(){
+      try{
+        if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
+          alert("التسجيل الصوتي غير مدعوم في هذا المتصفح");
+          return;
+        }
+
+        clearCurrentRecording(false);
+
+        currentStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        recordedChunks = [];
+
+        const mimeType = MediaRecorder.isTypeSupported("audio/webm;codecs=opus")
+          ? "audio/webm;codecs=opus"
+          : "audio/webm";
+
+        mediaRecorder = new MediaRecorder(currentStream, { mimeType });
+
+        mediaRecorder.ondataavailable = function(e){
+          if(e.data && e.data.size > 0){
+            recordedChunks.push(e.data);
+          }
+        };
+
+        mediaRecorder.onstart = function(){
+          el("recordStatus").textContent = "جاري التسجيل الآن...";
+        };
+
+        mediaRecorder.onerror = function(){
+          el("recordStatus").textContent = "حدث خطأ أثناء التسجيل";
+        };
+
+        mediaRecorder.onstop = function(){
+          if(currentStream){
+            currentStream.getTracks().forEach(track => track.stop());
+            currentStream = null;
+          }
+
+          if(!recordedChunks.length){
+            el("recordStatus").textContent = "لم يتم حفظ أي صوت";
+            return;
+          }
+
+          currentAudioBlob = new Blob(recordedChunks, { type: "audio/webm" });
+          const url = URL.createObjectURL(currentAudioBlob);
+
+          const audio = el("audioPreview");
+          audio.src = url;
+          audio.style.display = "block";
+          el("recordStatus").textContent = "تم التسجيل بنجاح وجاهز للحفظ";
+        };
+
+        mediaRecorder.start();
+      } catch (err){
+        el("recordStatus").textContent = "تعذر تشغيل الميكروفون";
+        alert("اسمحي للمتصفح باستخدام الميكروفون ثم أعيدي المحاولة");
+      }
+    }
+
+    function stopRecording(){
+      if(mediaRecorder && mediaRecorder.state === "recording"){
+        mediaRecorder.stop();
+      } else {
+        alert("لا يوجد تسجيل يعمل الآن");
+      }
+    }
+
+    function clearCurrentRecording(showStatus = true){
+      currentAudioBlob = null;
+      recordedChunks = [];
+
+      const audio = el("audioPreview");
+      audio.pause();
+      audio.removeAttribute("src");
+      audio.load();
+      audio.style.display = "none";
+
+      if(currentStream){
+        currentStream.getTracks().forEach(track => track.stop());
+        currentStream = null;
+      }
+
+      if(showStatus){
+        el("recordStatus").textContent = "تم حذف التسجيل الحالي";
+      }
+    }
+
+    function blobToDataURL(blob){
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(blob);
+      });
+    }
+
+    async function saveMessage(){
+      const teacherName = el("teacherName").value.trim();
+      const studentName = el("studentName").value.trim();
+      const className = el("className").value.trim();
+      const subjectName = el("subjectName").value.trim();
+      const importance = el("importance").value;
+      const messageType = el("messageType").value;
+      const messageText = el("messageText").value.trim();
+
+      if(!studentName){
+        alert("اكتبي اسم الطالب");
+        return;
+      }
+
+      if(!teacherName){
+        alert("اكتبي اسم المرسل");
+        return;
+      }
+
+      let audioData = null;
+
+      if(messageType === "text"){
+        if(!messageText){
+          alert("اكتبي الرسالة النصية");
+          return;
+        }
+      } else {
+        if(!currentAudioBlob){
+          alert("سجلي رسالة صوتية أولًا");
+          return;
+        }
+        audioData = await blobToDataURL(currentAudioBlob);
+      }
+
+      appData.messages.unshift({
+        id: Date.now() + Math.random(),
+        senderType,
+        teacherName,
+        studentName,
+        className,
+        subjectName,
+        importance,
+        messageType,
+        messageText: messageType === "text" ? messageText : "",
+        audioData: messageType === "audio" ? audioData : "",
+        createdAt: new Date().toLocaleString("ar-SA")
+      });
+
+      el("teacherName").value = "";
+      el("studentName").value = "";
+      el("className").value = "";
+      el("subjectName").value = "";
+      el("messageText").value = "";
+      el("importance").value = "عادي";
+      el("messageType").value = "text";
+      toggleMessageType();
+      clearCurrentRecording(false);
+      el("recordStatus").textContent = "لم يتم تسجيل صوت بعد";
+
+      saveData("تم حفظ الرسالة بنجاح");
+      showPage("messages", document.querySelector('[data-page="messages"]'));
+    }
+
+    function deleteMessage(id){
+      if(!confirm("هل تريدين حذف هذه الرسالة؟")) return;
+      appData.messages = appData.messages.filter(m => m.id !== id);
+      saveData("تم حذف الرسالة");
+    }
+
+    function deleteAllMessages(){
+      if(!confirm("هل تريدين حذف جميع الرسائل والأصوات؟")) return;
+      appData.messages = [];
+      saveData("تم حذف جميع الرسائل");
+    }
+
+    function renderStats(){
+      const total = appData.messages.length;
+      const audioCount = appData.messages.filter(m => m.messageType === "audio").length;
+      const parentAudio = appData.messages.filter(m => m.messageType === "audio" && m.senderType === "parent").length;
+
+      el("statTotal").textContent = total;
+      el("statAudio").textContent = audioCount;
+      el("statParentAudio").textContent = parentAudio;
+    }
+
+    function escapeHtml(text){
+      return String(text || "")
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+    }
+
+    function renderMessages(){
+      const box = el("messagesList");
+      const q = (el("searchInput").value || "").trim().toLowerCase();
+
+      const filtered = appData.messages.filter(m => {
+        const hay = [
+          m.teacherName,
+          m.studentName,
+          m.className,
+          m.subjectName,
+          m.messageText,
+          m.senderType === "teacher" ? "معلم" : "ولي أمر"
+        ].join(" ").toLowerCase();
+
+        return hay.includes(q);
+      });
+
+      if(!filtered.length){
+        box.innerHTML = `<div class="card empty">لا توجد رسائل</div>`;
+        return;
+      }
+
+      box.innerHTML = filtered.map(m => `
+        <div class="message-card">
+          <div class="message-top">
+            <div class="meta">
+              <div><strong>${escapeHtml(m.teacherName)}</strong></div>
+              <div>الطالب: ${escapeHtml(m.studentName)}</div>
+              <div>الصف: ${escapeHtml(m.className || "-")}</div>
+              <div>المادة: ${escapeHtml(m.subjectName || "-")}</div>
+              <div>التاريخ: ${escapeHtml(m.createdAt)}</div>
+            </div>
+
+            <div class="badges">
+              <span class="badge ${m.senderType === "teacher" ? "teacher" : "parent"}">
+                ${m.senderType === "teacher" ? "من المعلم/ة" : "من ولي الأمر"}
+              </span>
+              <span class="badge ${m.messageType === "text" ? "text" : "audio"}">
+                ${m.messageType === "text" ? "نصية" : "صوتية"}
+              </span>
+              <span class="badge ${m.importance === "عاجل" ? "urgent" : "normal"}">
+                ${escapeHtml(m.importance)}
+              </span>
+              <button class="btn btn-danger" type="button" onclick="deleteMessage(${m.id})">حذف</button>
+            </div>
+          </div>
+
+          ${m.messageType === "text"
+            ? `<div class="message-body">${escapeHtml(m.messageText)}</div>`
+            : `<audio controls src="${m.audioData}"></audio>`
+          }
+        </div>
+      `).join("");
+    }
+
+    function renderAll(){
+      updatePlatformNameUI();
+      renderStats();
+      renderMessages();
+    }
+
+    toggleMessageType();
+    renderAll();
+  </script>
+</body>
+</html>
